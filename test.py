@@ -14,11 +14,10 @@ inno_df.columns
  
 # %%
 # GETTING A LOWRES GEODATAFRAME
-world_filepath = gpd.datasets.get_path('naturalearth_lowres')
-world = gpd.read_file(world_filepath)
-xlpath='C:/filename.xlsx'
+world = gpd.read_file('/home/andreas/Programming/GDIH_Innovators/World_Countries_(Generalized)/World_Countries__Generalized_.shp')
 world.to_csv('world.csv', index = False, mode = 'w')
-#world.index[world['name']=='United States of America'].tolist()
+# world.to_csv('world.csv', index = False, mode = 'w')
+# world.index[world['name']=='United States of America'].tolist()
 
 # %%
 innoworld_df = world.merge(inno_df, on='country')
