@@ -11,7 +11,7 @@ views = Blueprint(__name__, "views")
 
 @views.route("/")
 def home():
-    return render_template("index.html", name="Andreas")
+    return render_template("map.html")
 
 @views.route("/")
 def plot():
