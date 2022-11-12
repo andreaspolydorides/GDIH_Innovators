@@ -1,8 +1,15 @@
+// Math magic to limit minZoom
+var maxScreenDimension = window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth;
+var tileSize = 256;
+var maxTiles = Math.floor(maxScreenDimension / tileSize);
+minZoom = Math.ceil(Math.log(maxTiles) / Math.log(2));
+minZoom = minZoom < 2 ? 2 : minZoom;
+
 var map = L.map('map').setView([55, 0], 4);
 
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    minZoom: 2,
+    minZoom: minZoom,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
