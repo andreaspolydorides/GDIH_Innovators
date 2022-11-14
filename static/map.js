@@ -1,4 +1,6 @@
-var map = L.map('map').setView([55, 0], 4);
+var map = L.map('map', {
+    preferCanvas: true
+}).setView([55, 0], 4);
 
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 10,
@@ -33,9 +35,22 @@ map.on('drag', function() {
 
 var geojson;
 
-function style() {
+function getColor(d) {
+    return d > 1000000000 ? '#3f007d' :
+           d > 500000000  ? '#54278f' :
+           d > 100000000  ? '#6a51a3' :
+           d > 50000000  ? '#807dba' :
+           d > 10000000  ? '#9e9ac8' :
+           d > 5000000  ? '#bcbddc' :
+           d > 1000000  ? '#dadaeb' :
+           d > 100000  ? '#efedf5' :
+                      '#fcfbfd';
+}
+
+
+function style(feature) {
     return {
-        fillColor: '#6A5ACD',
+        fillColor: getColor(feature.properties.POP_EST),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -64,6 +79,7 @@ function resetHighlight(e) {
 }
 
 function zoomToFeature(e) {
+    var layer = e.target;
     map.fitBounds(e.target.getBounds());
     info.update(layer.feature.properties);
     console.log(layer.feature.properties.ADMIN)
@@ -95,7 +111,8 @@ info.onAdd = function (map) {
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
     this._div.innerHTML = '<h4>Country Population</h4>' +  (props ?
-        '<b>' + props.ADMIN + '</b><br />' + props.POP_EST + ' people'
+        '<b>' + props.ADMIN + '</b><br />' + props.POP_EST + ' people' + '</b><br />' + 
+        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#countryModal">Detailed view</button>'
         : 'Click on a country');
 };
 
