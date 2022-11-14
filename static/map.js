@@ -9,7 +9,6 @@ map.setMinZoom(map.getZoom()-1)
 map.fitBounds([[-85.0511, -180], [85.0511, 180]], true);
 map.setMinZoom(map.getZoom());
 
-console.log(map.getZoom());
 function map_onResize(e){    
     map.setMinZoom(map.getZoom()-1)
     map.fitBounds([[-85.0511, -180], [85.0511, 180]], true);
@@ -66,6 +65,9 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
+    info.update(layer.feature.properties);
+    console.log(layer.feature.properties.ADMIN)
+    //$("#countryModal").modal('show');
 }
 
 function onEachFeature(feature, layer) {
@@ -80,6 +82,24 @@ geojson = L.geoJson(countriesData, {
     style: style,
     onEachFeature: onEachFeature
 }).addTo(map);
+
+
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Country Population</h4>' +  (props ?
+        '<b>' + props.ADMIN + '</b><br />' + props.POP_EST + ' people'
+        : 'Click on a country');
+};
+
+info.addTo(map);
 
 
 var madeDropdownHTML;
