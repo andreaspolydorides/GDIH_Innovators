@@ -1,17 +1,21 @@
-// Math magic to limit minZoom
-var maxScreenDimension = window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth;
-var tileSize = 256;
-var maxTiles = Math.floor(maxScreenDimension / tileSize);
-minZoom = Math.ceil(Math.log(maxTiles) / Math.log(2));
-minZoom = minZoom < 2 ? 2 : minZoom;
-
 var map = L.map('map').setView([55, 0], 4);
 
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    minZoom: minZoom,
+    maxZoom: 10,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
+
+map.setMinZoom(map.getZoom()-1)
+map.fitBounds([[-85.0511, -180], [85.0511, 180]], true);
+map.setMinZoom(map.getZoom());
+
+console.log(map.getZoom());
+function map_onResize(e){    
+    map.setMinZoom(map.getZoom()-1)
+    map.fitBounds([[-85.0511, -180], [85.0511, 180]], true);
+    map.setMinZoom(map.getZoom());
+    map.setMaxZoom(10);
+}
 
 map.zoomControl.remove();
 
@@ -19,8 +23,8 @@ L.control.zoom({
     position: 'bottomright'
 }).addTo(map);
 
-var southWest = L.latLng(-89.98155760646617, -180),
-northEast = L.latLng(89.99346179538875, 180);
+var southWest = L.latLng(-85.0511, -180),
+northEast = L.latLng(85.0511, 180);
 var bounds = L.latLngBounds(southWest, northEast);
 
 map.setMaxBounds(bounds);
@@ -28,16 +32,67 @@ map.on('drag', function() {
     map.panInsideBounds(bounds, { animate: false });
 });
 
-L.geoJson(countriesData).addTo(map);
+var geojson;
 
-let searchDropdown = '<select name="select_box" class="form-select" id="select_box"><option value="">Select Country</option>';
+function style() {
+    return {
+        fillColor: '#6A5ACD',
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
 
-countryList.forEach(makeSearchHTML);
+// listeners
 
-function makeSearchHTML(item) {
-    searchDropdown += '<option value="' + item + '">' + item + '</option>';
-};
+function highlightFeature(e) {
+    var layer = e.target;
 
-searchDropdown += '</select>';
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
 
-document.getElementById("countrySearchContainer").innerHTML = searchDropdown;
+    layer.bringToFront();
+}
+
+function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+}
+
+function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+
+geojson = L.geoJson(countriesData, {
+    style: style,
+    onEachFeature: onEachFeature
+}).addTo(map);
+
+
+var madeDropdownHTML;
+makeDropdownHTML();
+
+function makeDropdownHTML() {
+    if (!madeDropdownHTML) {
+        madeDropdownHTML = true;
+        let searchDropdown = '<select name="select_box" class="form-select" id="select_box"><option value="">Select Country</option>';
+        countryList.forEach(item => (searchDropdown += '<option value="' + item + '">' + item + '</option>'));
+        searchDropdown += '</select>';
+        document.getElementById("countrySearchContainer").innerHTML = searchDropdown;
+    }
+}
+
+
