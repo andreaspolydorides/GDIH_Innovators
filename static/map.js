@@ -130,7 +130,7 @@ makeDropdownHTML();
 function makeDropdownHTML() {
     if (!madeDropdownHTML) {
         madeDropdownHTML = true;
-        let searchDropdown = '<select name="select_box" class="form-select" id="select_box"><option value="">Select Country</option>';
+        let searchDropdown = '<select name="select_box" class="form-select" id="select_box"><option value="">Country</option>';
         countryList.forEach(item => (searchDropdown += '<option value="' + item + '">' + item + '</option>'));
         searchDropdown += '</select>';
         document.getElementById("countrySearchContainer").innerHTML = searchDropdown;
