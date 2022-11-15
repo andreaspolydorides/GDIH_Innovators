@@ -48,16 +48,11 @@
 
     .info {
       padding: 6px 8px;
-      position: fixed;
-      bottom: 1vh;
-      left: 1vw;
       font: 14px/16px Arial, Helvetica, sans-serif;
       background: white;
       background: rgba(255,255,255,0.8);
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       border-radius: 5px;
-
-
       
     }
 
@@ -74,8 +69,8 @@
     <div class="modal fade" id="countryModal" tabindex="-1" aria-labelledby="countryModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <div class="modal-header" id="countrModealHeader">
+            <h1 class="modal-title fs-5" id="countryModalLabel">If this, report bug</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -83,7 +78,6 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
@@ -101,12 +95,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
               <div class="navbar-nav">
-                <div id="countrySearchContainer"></div>
-                <button class="btn btn-light" href="#" role="button">Button</button>
-                <button class="btn btn-light" href="#" role="button">Button</button>
-                <button class="btn btn-light" href="#" role="button">Button</button>
-                <button class="btn btn-light" href="#" role="button">Button</button>
-                <button class="btn btn-light" href="#" role="button">Button</button>
+                <div class="me-2" id="countrySearchContainer"></div>
+                <button class="btn btn-light me-2" href="#" role="button">Button</button>
+                <button class="btn btn-light me-2" href="#" role="button">Button</button>
+                <button class="btn btn-light me-2" href="#" role="button">Button</button>
+                <button class="btn btn-light me-2" href="#" role="button">Button</button>
+                <button class="btn btn-light me-2" href="#" role="button">Button</button>
               </div>
             </div>
           </div>

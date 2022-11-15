@@ -81,9 +81,12 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
     var layer = e.target;
     map.fitBounds(e.target.getBounds());
+    // and also set that country's quick info box and prepare modal
     info.update(layer.feature.properties);
-    console.log(layer.feature.properties.ADMIN)
-    //$("#countryModal").modal('show');
+    // update the modal that could pop up
+    document.getElementById("countrModealHeader").innerHTML = '<h1 class="modal-title fs-5" id="countryModalLabel">' + 
+    layer.feature.properties.ADMIN + 
+    '</h1><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
 }
 
 function onEachFeature(feature, layer) {
@@ -100,7 +103,9 @@ geojson = L.geoJson(countriesData, {
 }).addTo(map);
 
 
-var info = L.control();
+var info = L.control({
+    position: 'bottomleft'
+});
 
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
@@ -111,8 +116,8 @@ info.onAdd = function (map) {
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
     this._div.innerHTML = '<h4>Country Population</h4>' +  (props ?
-        '<b>' + props.ADMIN + '</b><br />' + props.POP_EST + ' people' + '</b><br />' + 
-        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#countryModal">Detailed view</button>'
+        '<b>' + props.ADMIN + '</b><br />' + props.POP_EST + ' people' + '<br />' + 
+        '<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#countryModal">Detailed view</button>'
         : 'Click on a country');
 };
 
