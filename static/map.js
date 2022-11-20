@@ -84,9 +84,13 @@ function zoomToFeature(e) {
     // and also set that country's quick info box and prepare modal
     info.update(layer.feature.properties);
     // update the modal that could pop up
-    document.getElementById("countrModealHeader").innerHTML = '<h1 class="modal-title fs-5" id="countryModalLabel">' + 
+    // make the title be the country name
+    document.getElementById("countryModalHeader").innerHTML = '<h1 class="modal-title fs-5" id="countryModalLabel">' + 
     layer.feature.properties.ADMIN + 
     '</h1><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+    // get the innovations related to the country
+    modalInnerContent(layer.feature.properties.ADMIN);
+
 }
 
 function onEachFeature(feature, layer) {
@@ -135,6 +139,28 @@ function makeDropdownHTML() {
         searchDropdown += '</select>';
         document.getElementById("countrySearchContainer").innerHTML = searchDropdown;
     }
+}
+
+function modalInnerContent(country) {
+    var innerModal = '<div id="accordion">';
+    var iterator = 0;
+    console.log(country);
+    westPacific.innovations.forEach(function(item) {
+        console.log(item["Country (of Origin)"]);
+        if (country.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
+            iterator += 1;
+            console.log(iterator);
+            innerModal += '<div class="card"><div class="card-header" id="heading' + iterator.toString() + '"><h5 class="mb-0">';
+            innerModal += '<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse'
+            + iterator.toString() + '" aria-expanded="false" aria-controls="collapse' + iterator.toString()
+            + '">' + item.Name + '</button></h5></div>';
+            innerModal += '<div id="collapse' + iterator.toString() + '" class="collapse" aria-labelledby="heading' + iterator.toString() + '" data-parent="#accordion"><div class="card-body">'
+            + 'Data about the innovation should go here' + '</div></div></div>';
+        }
+    });
+    innerModal += '</div>';
+    console.log(innerModal);
+    document.getElementById("countryInfo").innerHTML = innerModal;
 }
 
 

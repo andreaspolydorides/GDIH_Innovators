@@ -1,4 +1,5 @@
-[
+const westPacific = {
+"innovations": [
  {
    "Name": "DOWELL",
    "Link": "https://news.samsung.com/global/samsungs-dowell-helps-those-with-upper-limb-disabilities-use-smartphones",
@@ -1154,4 +1155,4 @@
    "Open or scalable aspect": "",
    "References": ""
  }
-]
+]};
