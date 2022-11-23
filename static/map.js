@@ -36,21 +36,30 @@ map.on('drag', function() {
 var geojson;
 
 function getColor(d) {
-    return d > 1000000000 ? '#3f007d' :
-           d > 500000000  ? '#54278f' :
-           d > 100000000  ? '#6a51a3' :
-           d > 50000000  ? '#807dba' :
-           d > 10000000  ? '#9e9ac8' :
-           d > 5000000  ? '#bcbddc' :
-           d > 1000000  ? '#dadaeb' :
-           d > 100000  ? '#efedf5' :
+    return d > 10 ? '#3f007d' :
+           d > 5  ? '#54278f' :
+           d > 1  ? '#6a51a3' :
+           d > 0.5  ? '#807dba' :
+           d > 0.1  ? '#9e9ac8' :
+           d > 0.05  ? '#bcbddc' :
+           d > 0.01  ? '#dadaeb' :
+           d > 0.001  ? '#efedf5' :
                       '#fcfbfd';
 }
 
 
 function style(feature) {
+    num_innovations = 0;
+    westPacific.innovations.forEach(function(item) {
+        if (feature.properties.ADMIN.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
+            num_innovations += 1;
+        }
+    });
+    if (feature.properties.ADMIN === 'Australia') {
+        console.log(num_innovations);
+    };
     return {
-        fillColor: getColor(feature.properties.POP_EST),
+        fillColor: getColor(num_innovations/(feature.properties.POP_EST/10000000)),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -60,7 +69,6 @@ function style(feature) {
 }
 
 // listeners
-
 function highlightFeature(e) {
     var layer = e.target;
 
@@ -141,8 +149,9 @@ function makeDropdownHTML() {
     }
 }
 
+
 function modalInnerContent(country) {
-    var innerModal = '<div id="accordion">';
+    var innerModal = '<div class="accordion" id="countryAccordion">';
     var iterator = 0;
     console.log(country);
     westPacific.innovations.forEach(function(item) {
@@ -150,12 +159,12 @@ function modalInnerContent(country) {
         if (country.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
             iterator += 1;
             console.log(iterator);
-            innerModal += '<div class="card"><div class="card-header" id="heading' + iterator.toString() + '"><h5 class="mb-0">';
-            innerModal += '<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse'
+            innerModal += '<div class="accordion-item"><h2 class="accordion-header" id="heading' + iterator.toString() + '">';
+            innerModal += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'
             + iterator.toString() + '" aria-expanded="false" aria-controls="collapse' + iterator.toString()
-            + '">' + item.Name + '</button></h5></div>';
-            innerModal += '<div id="collapse' + iterator.toString() + '" class="collapse" aria-labelledby="heading' + iterator.toString() + '" data-parent="#accordion"><div class="card-body">'
-            + 'Data about the innovation should go here' + '</div></div></div>';
+            + '">' + item.Name + '</button></h2>';
+            innerModal += '<div id="collapse' + iterator.toString() + '" class="accordion-collapse collapse" aria-labelledby="heading' + iterator.toString() + '" data-bs-parent="#countryAccordion"><div class="accordion-body">'
+            + 'Link (if available): <a href="' + item.Link + '">' + item.Link + '</a></br>More data about the innovation should go here' + '</div></div></div>';
         }
     });
     innerModal += '</div>';
