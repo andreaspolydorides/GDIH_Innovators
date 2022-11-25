@@ -47,17 +47,19 @@ function getColor(d) {
                       '#fcfbfd';
 }
 
+// create object with innovations per country for each country
+var inno_per_country = new Object();
+westPacific.innovations.forEach(function(item) {
+    if (!(item["Country (of Origin)"] in inno_per_country)) {
+        inno_per_country[item["Country (of Origin)"]] = 1;
+    }
+    else {
+        inno_per_country[item["Country (of Origin)"]] += 1;
+    }
+});
 
 function style(feature) {
-    num_innovations = 0;
-    westPacific.innovations.forEach(function(item) {
-        if (feature.properties.ADMIN.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
-            num_innovations += 1;
-        }
-    });
-    if (feature.properties.ADMIN === 'Australia') {
-        console.log(num_innovations);
-    };
+    let num_innovations = inno_per_country[feature.properties.ADMIN];
     return {
         fillColor: getColor(num_innovations/(feature.properties.POP_EST/10000000)),
         weight: 2,
@@ -127,9 +129,11 @@ info.onAdd = function (map) {
 
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
-    this._div.innerHTML = '<h4>Country Population</h4>' +  (props ?
-        '<b>' + props.ADMIN + '</b><br />' + props.POP_EST + ' people' + '<br />' + 
-        '<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#countryModal">Detailed view</button>'
+    this._div.innerHTML = '<h4>Innovation Data</h4>' +  (props ?
+        '<b>' + props.ADMIN + '</b><br />' + (!(props.ADMIN in inno_per_country) ? 'No innovations listed' + '<br />' + 
+        '<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#countryModal" disabled>Detailed view</button>'
+        : inno_per_country[props.ADMIN].toString() + ' innovations listed' + '<br />' + 
+        '<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#countryModal">Detailed view</button>')
         : 'Click on a country');
 };
 
@@ -153,22 +157,18 @@ function makeDropdownHTML() {
 function modalInnerContent(country) {
     var innerModal = '<div class="accordion" id="countryAccordion">';
     var iterator = 0;
-    console.log(country);
     westPacific.innovations.forEach(function(item) {
-        console.log(item["Country (of Origin)"]);
         if (country.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
             iterator += 1;
-            console.log(iterator);
             innerModal += '<div class="accordion-item"><h2 class="accordion-header" id="heading' + iterator.toString() + '">';
             innerModal += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'
             + iterator.toString() + '" aria-expanded="false" aria-controls="collapse' + iterator.toString()
             + '">' + item.Name + '</button></h2>';
             innerModal += '<div id="collapse' + iterator.toString() + '" class="accordion-collapse collapse" aria-labelledby="heading' + iterator.toString() + '" data-bs-parent="#countryAccordion"><div class="accordion-body">'
-            + 'Link (if available): <a href="' + item.Link + '">' + item.Link + '</a></br>More data about the innovation should go here' + '</div></div></div>';
+            + 'Link (if available): <a href="' + item.Link + '" target="_blank" rel="noopener noreferrer">' + item.Link + '</a></br>More data about the innovation should go here' + '</div></div></div>';
         }
     });
     innerModal += '</div>';
-    console.log(innerModal);
     document.getElementById("countryInfo").innerHTML = innerModal;
 }
 
