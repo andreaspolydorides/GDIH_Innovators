@@ -111,7 +111,7 @@ const westPacific = {
    "Founding Year": 2015,
    "Type of Venture (charity, project, academic, for-profit)": "social enterprise,for-profit",
    "Region": "India",
-   "Country (of Origin)": "Ratified",
+   "Country (of Origin)": "India",
    "Countries of Operations": "India",
    "UNCRPD Level": "Trivandrum",
    "City": "",

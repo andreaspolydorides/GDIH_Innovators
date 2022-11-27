@@ -181,32 +181,34 @@
                 <input type="submit">
               </form>
               <div class="btn-group mx-lg-2">
-                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-                  <label class="btn btn-outline-primary btn-light" for="btnradio1">
-                    All
-                  </label>
+                <form autocomplete="off" id="impairment-radio" type="radio">
+                  <div class="btn-group fa-fw" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="btnradio" id="all-radio" autocomplete="off" value="All" onchange="radioChange(this)" checked>
+                    <label class="btn btn-outline-primary btn-light" for="all-radio">
+                      All
+                    </label>
                   
-                  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" checked>
-                  <label class="btn btn-outline-primary btn-light" for="btnradio2">
-                    <i class="fas fa-eye-slash"></i>
-                  </label>
-        
-                  <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
-                  <label class="btn btn-outline-primary btn-light" for="btnradio3">
-                    <i class="fas fa-deaf"></i>
-                  </label>
-                
-                  <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off">
-                  <label class="btn btn-outline-primary btn-light" for="btnradio4">
-                    <i class="fas fa-wheelchair"></i>
-                  </label>
+                    <input type="radio" class="btn-check" name="btnradio" id="mobility-radio" autocomplete="off" value="Mobility" onchange="radioChange(this)">
+                    <label class="btn btn-outline-primary btn-light" for="mobility-radio">
+                      <i class="fas fa-wheelchair"></i>
+                    </label>
 
-                  <input type="radio" class="btn-check" name="btnradio" id="btnradio5" autocomplete="off">
-                  <label class="btn btn-outline-primary btn-light" for="btnradio5">
-                    <i class="fas fa-brain"></i>
-                  </label>
-                </div>
+                    <input type="radio" class="btn-check" name="btnradio" id="sight-radio" autocomplete="off" value="Visual" onchange="radioChange(this)">
+                    <label class="btn btn-outline-primary btn-light" for="sight-radio">
+                      <i class="fas fa-eye-slash"></i>
+                    </label>
+          
+                    <input type="radio" class="btn-check" name="btnradio" id="hearing-radio" autocomplete="off" value="Hearing" onchange="radioChange(this)">
+                    <label class="btn btn-outline-primary btn-light" for="hearing-radio">
+                      <i class="fas fa-deaf"></i>
+                    </label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="cognitive-radio" autocomplete="off" value="Cognitive" onchange="radioChange(this)">
+                    <label class="btn btn-outline-primary btn-light" for="cognitive-radio">
+                      <i class="fas fa-brain"></i>
+                    </label>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

@@ -36,32 +36,67 @@ map.on('drag', function() {
 var geojson;
 
 function getColor(d) {
-    return d > 10 ? '#3f007d' :
-           d > 5  ? '#54278f' :
-           d > 1  ? '#6a51a3' :
-           d > 0.5  ? '#807dba' :
-           d > 0.1  ? '#9e9ac8' :
-           d > 0.05  ? '#bcbddc' :
-           d > 0.01  ? '#dadaeb' :
-           d > 0.001  ? '#efedf5' :
+    return d > 7 ? '#3f007d' :
+           d > 6  ? '#54278f' :
+           d > 5  ? '#6a51a3' :
+           d > 4  ? '#807dba' :
+           d > 3  ? '#9e9ac8' :
+           d > 2  ? '#bcbddc' :
+           d > 1  ? '#dadaeb' :
+           d > 0  ? '#efedf5' :
                       '#fcfbfd';
 }
 
 // create object with innovations per country for each country
 var inno_per_country = new Object();
+var inno_types = new Object();
 westPacific.innovations.forEach(function(item) {
     if (!(item["Country (of Origin)"] in inno_per_country)) {
         inno_per_country[item["Country (of Origin)"]] = 1;
+        inno_types[item["Country (of Origin)"]] = [0,0,0,0];
     }
     else {
         inno_per_country[item["Country (of Origin)"]] += 1;
     }
+
+    let x = item["Impairment category (mobility, visual, hearing, cognitive)"].toUpperCase();
+    if (x.includes("MOBILITY")) {
+        inno_types[item["Country (of Origin)"]][0] += 1;
+    }
+    else if (x.includes("VISUAL")) {
+        inno_types[item["Country (of Origin)"]][1] += 1;
+    }
+    else if (x.includes("HEARING")) {
+        inno_types[item["Country (of Origin)"]][2] += 1;
+    }
+    else if (x.includes("COGNITIVE")) { 
+        inno_types[item["Country (of Origin)"]][3] += 1;
+    }
+    else {
+        console.log('No correct type of impairment category for ' + item["Country (of Origin)"] + "'s " + item["Name"]);
+    }
 });
+
+var active_radio = "ALL";
 
 function style(feature) {
     let num_innovations = inno_per_country[feature.properties.ADMIN];
+
+    if (active_radio === "Mobility") {
+        num_innovations = inno_types[feature.properties.ADMIN][0];
+    }
+    else if (active_radio === "Visual") {
+        num_innovations = inno_types[feature.properties.ADMIN][1];
+    }
+    else if (active_radio === "Hearing") {
+        num_innovations = inno_types[feature.properties.ADMIN][2];
+    }
+    else if (active_radio === "Cognitive") { 
+        num_innovations = inno_types[feature.properties.ADMIN][3];
+    }
+
     return {
-        fillColor: getColor(num_innovations/(feature.properties.POP_EST/10000000)),
+        fillColor: getColor(num_innovations),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -238,10 +273,20 @@ function autocomplete(inp, arr) {
   } 
 
 autocomplete(document.getElementById("myInput"), countryList);
+//Autocomplete section end
 
+// Event listener for Impairment category radio buttons, called through onchange
+function radioChange(value) {
+    active_radio = value;
+    console.log("RADIO CLICKED!");
+    if (geojson) { geojson.remove(); }
+    geojson = L.geoJson(countriesData, {
+        style: style,
+        onEachFeature: onEachFeature
+    }).addTo(map);
+}
 
 // Fills modal appropriately
-
 function modalInnerContent(country) {
     var overviewModal = '<div class="accordion" id="countryAccordion">';
     var iterator = 0;
