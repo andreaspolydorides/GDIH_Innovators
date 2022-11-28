@@ -33,7 +33,13 @@ map.on('drag', function() {
     map.panInsideBounds(bounds, { animate: false });
 });
 
+
+var active_layer;
 var geojson;
+var mobility;
+var visual;
+var hearing;
+var cognitive;
 
 function getColor(d) {
     return d > 7 ? '#3f007d' :
@@ -44,16 +50,22 @@ function getColor(d) {
            d > 2  ? '#bcbddc' :
            d > 1  ? '#dadaeb' :
            d > 0  ? '#efedf5' :
-                      '#fcfbfd';
+                    '#fcfbfd';
 }
 
 // create object with innovations per country for each country
 var inno_per_country = new Object();
-var inno_types = new Object();
+var mobility_inno = new Object();
+var visual_inno = new Object();
+var hearing_inno = new Object();
+var cognitive_inno = new Object();
 westPacific.innovations.forEach(function(item) {
     if (!(item["Country (of Origin)"] in inno_per_country)) {
         inno_per_country[item["Country (of Origin)"]] = 1;
-        inno_types[item["Country (of Origin)"]] = [0,0,0,0];
+        mobility_inno[item["Country (of Origin)"]] = 0;
+        visual_inno[item["Country (of Origin)"]] = 0;
+        hearing_inno[item["Country (of Origin)"]] = 0;
+        cognitive_inno[item["Country (of Origin)"]] = 0;
     }
     else {
         inno_per_country[item["Country (of Origin)"]] += 1;
@@ -61,49 +73,22 @@ westPacific.innovations.forEach(function(item) {
 
     let x = item["Impairment category (mobility, visual, hearing, cognitive)"].toUpperCase();
     if (x.includes("MOBILITY")) {
-        inno_types[item["Country (of Origin)"]][0] += 1;
+        mobility_inno[item["Country (of Origin)"]] += 1;
     }
     else if (x.includes("VISUAL")) {
-        inno_types[item["Country (of Origin)"]][1] += 1;
+        visual_inno[item["Country (of Origin)"]] += 1;
     }
     else if (x.includes("HEARING")) {
-        inno_types[item["Country (of Origin)"]][2] += 1;
+        hearing_inno[item["Country (of Origin)"]] += 1;
     }
     else if (x.includes("COGNITIVE")) { 
-        inno_types[item["Country (of Origin)"]][3] += 1;
+        cognitive_inno[item["Country (of Origin)"]] += 1;
     }
     else {
         console.log('No correct type of impairment category for ' + item["Country (of Origin)"] + "'s " + item["Name"]);
     }
 });
 
-var active_radio = "ALL";
-
-function style(feature) {
-    let num_innovations = inno_per_country[feature.properties.ADMIN];
-
-    if (active_radio === "Mobility") {
-        num_innovations = inno_types[feature.properties.ADMIN][0];
-    }
-    else if (active_radio === "Visual") {
-        num_innovations = inno_types[feature.properties.ADMIN][1];
-    }
-    else if (active_radio === "Hearing") {
-        num_innovations = inno_types[feature.properties.ADMIN][2];
-    }
-    else if (active_radio === "Cognitive") { 
-        num_innovations = inno_types[feature.properties.ADMIN][3];
-    }
-
-    return {
-        fillColor: getColor(num_innovations),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.7
-    };
-}
 
 // listeners
 function highlightFeature(e) {
@@ -120,7 +105,7 @@ function highlightFeature(e) {
 }
 
 function resetHighlight(e) {
-    geojson.resetStyle(e.target);
+    active_layer.resetStyle(e.target);
 }
 
 function zoomToFeature(e) {
@@ -146,10 +131,91 @@ function onEachFeature(feature, layer) {
 }
 
 geojson = L.geoJson(countriesData, {
-    style: style,
+    style: function(feature) {
+        return {
+            fillColor: getColor(inno_per_country[feature.properties.ADMIN]),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    },
     onEachFeature: onEachFeature
 }).addTo(map);
+active_layer = geojson;
 
+mobility = L.geoJson(countriesData, {
+    style: function(feature) {
+        return {
+            fillColor: getColor(mobility_inno[feature.properties.ADMIN]),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    },
+    onEachFeature: onEachFeature
+});
+
+visual = L.geoJson(countriesData, {
+    style: function(feature) {
+        return {
+            fillColor: getColor(visual_inno[feature.properties.ADMIN]),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    },
+    onEachFeature: onEachFeature
+});
+
+hearing = L.geoJson(countriesData, {
+    style: function(feature) {
+        return {
+            fillColor: getColor(hearing_inno[feature.properties.ADMIN]),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    },
+    onEachFeature: onEachFeature
+});
+
+cognitive = L.geoJson(countriesData, {
+    style: function(feature) {
+        return {
+            fillColor: getColor(cognitive_inno[feature.properties.ADMIN]),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    },
+    onEachFeature: onEachFeature
+});
+
+var overlays = {
+    "Original": geojson,
+    '<span><i class="fas fa-wheelchair"></i> Mobility</span>': mobility,
+    '<span><i class="fas fa-eye-slash"></i> Visual</span>': visual,
+    '<span><i class="fas fa-deaf"></i> Hearing</span>': hearing,
+    '<span><i class="fas fa-brain"></i> Cognitive</span>': cognitive
+};
+//adding overlays as baselayers for radio instead of checkbox
+var layerControl = L.control.layers(overlays).addTo(map);
+
+//listening for baselayer change as this is what overlays have been added as (for radio instead of checkbox)
+map.on('baselayerchange', function (e) {
+    // new layer selected
+    active_layer = e.layer;
+});
 
 var info = L.control({
     position: 'bottomleft'
@@ -275,16 +341,6 @@ function autocomplete(inp, arr) {
 autocomplete(document.getElementById("myInput"), countryList);
 //Autocomplete section end
 
-// Event listener for Impairment category radio buttons, called through onchange
-function radioChange(value) {
-    active_radio = value;
-    console.log("RADIO CLICKED!");
-    if (geojson) { geojson.remove(); }
-    geojson = L.geoJson(countriesData, {
-        style: style,
-        onEachFeature: onEachFeature
-    }).addTo(map);
-}
 
 // Fills modal appropriately
 function modalInnerContent(country) {
