@@ -136,22 +136,59 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+
+            <div class="btn-group mb-2">
+              <form autocomplete="off" id="impairment-radio" type="radio" >
+                <div class="btn-group fa-fw" role="group" aria-label="Basic radio toggle button group">
+                  <input type="radio" class="btn-check" name="btnradio" id="all-radio" autocomplete="off" value="all" onchange="resetModalImpairment(this.value)" checked>
+                  <label class="btn btn-outline-primary btn-light" for="all-radio">
+                    All
+                  </label>
+                
+                  <input type="radio" class="btn-check" name="btnradio" id="mobility-radio" autocomplete="off" value="mobility" onchange="resetModalImpairment(this.value)">
+                  <label class="btn btn-outline-primary btn-light" for="mobility-radio">
+                    <i class="fas fa-wheelchair"></i>
+                  </label>
+
+                  <input type="radio" class="btn-check" name="btnradio" id="sight-radio" autocomplete="off" value="visual" onchange="resetModalImpairment(this.value)">
+                  <label class="btn btn-outline-primary btn-light" for="sight-radio">
+                    <i class="fas fa-eye-slash"></i>
+                  </label>
+        
+                  <input type="radio" class="btn-check" name="btnradio" id="hearing-radio" autocomplete="off" value="hearing" onchange="resetModalImpairment(this.value)">
+                  <label class="btn btn-outline-primary btn-light" for="hearing-radio">
+                    <i class="fas fa-deaf"></i>
+                  </label>
+
+                  <input type="radio" class="btn-check" name="btnradio" id="cognitive-radio" autocomplete="off" value="cognitive" onchange="resetModalImpairment(this.value)">
+                  <label class="btn btn-outline-primary btn-light" for="cognitive-radio">
+                    <i class="fas fa-brain"></i>
+                  </label>
+                </div>
+              </form>
+            </div>
+
             <nav>
-              <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <div class="nav nav-tabs mb-2" id="nav-tab" role="tablist">
                 <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-overview" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Overview</button>
-                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Trend</button>
-                <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Start-up</button>
+                <button class="nav-link" id="nav-trend-tab" data-bs-toggle="tab" data-bs-target="#nav-trend" type="button" role="tab" aria-controls="nav-trend" aria-selected="false">Trend</button>
+                <button class="nav-link" id="nav-startup-tab" data-bs-toggle="tab" data-bs-target="#nav-startup" type="button" role="tab" aria-controls="nav-startup" aria-selected="false">Start-up</button>
               </div>
             </nav>
+
             <div class="tab-content" id="nav-tabContent">
               <div class="tab-pane fade show active" id="nav-overview" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
                 ...
               </div>
-              <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
-                ...
+              <div class="tab-pane fade" id="nav-trend" role="tabpanel" aria-labelledby="nav-trend-tab" tabindex="0">
+                <div>
+                  <canvas id="trendChart"></canvas>
+                </div>
               </div>
-              <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
-                ...
+              <div class="tab-pane fade" id="nav-startup" role="tabpanel" aria-labelledby="nav-startup-tab" tabindex="0">
+                <div>
+                  <canvas id="startupChart"></canvas>
+                </div>
               </div>
             </div>
             
@@ -180,36 +217,7 @@
                 </div>
                 <input type="submit">
               </form>
-              <div class="btn-group mx-lg-2">
-                <form autocomplete="off" id="impairment-radio" type="radio">
-                  <div class="btn-group fa-fw" role="group" aria-label="Basic radio toggle button group">
-                    <input type="radio" class="btn-check" name="btnradio" id="all-radio" autocomplete="off" value="All" onchange="refreshStyle(this)" checked>
-                    <label class="btn btn-outline-primary btn-light" for="all-radio">
-                      All
-                    </label>
-                  
-                    <input type="radio" class="btn-check" name="btnradio" id="mobility-radio" autocomplete="off" value="Mobility" onchange="refreshStyle(this)">
-                    <label class="btn btn-outline-primary btn-light" for="mobility-radio">
-                      <i class="fas fa-wheelchair"></i>
-                    </label>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="sight-radio" autocomplete="off" value="Visual" onchange="refreshStyle(this)">
-                    <label class="btn btn-outline-primary btn-light" for="sight-radio">
-                      <i class="fas fa-eye-slash"></i>
-                    </label>
-          
-                    <input type="radio" class="btn-check" name="btnradio" id="hearing-radio" autocomplete="off" value="Hearing" onchange="refreshStyle(this)">
-                    <label class="btn btn-outline-primary btn-light" for="hearing-radio">
-                      <i class="fas fa-deaf"></i>
-                    </label>
-
-                    <input type="radio" class="btn-check" name="btnradio" id="cognitive-radio" autocomplete="off" value="Cognitive" onchange="refreshStyle(this)">
-                    <label class="btn btn-outline-primary btn-light" for="cognitive-radio">
-                      <i class="fas fa-brain"></i>
-                    </label>
-                  </div>
-                </form>
-              </div>
+              
             </div>
           </div>
         </nav>
@@ -221,6 +229,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='countries.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='west-pacific-test.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='countryNames.js') }}"></script>

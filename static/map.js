@@ -33,13 +33,17 @@ map.on('drag', function() {
     map.panInsideBounds(bounds, { animate: false });
 });
 
-
+// which overlay layer is currently selected
 var active_layer;
+var active_impairment = "all";
+// overlay layers
 var geojson;
 var mobility;
 var visual;
 var hearing;
 var cognitive;
+// country currently in focus, used for refreshing modal
+var focused_country;
 
 function getColor(d) {
     return d > 7 ? '#3f007d' :
@@ -110,6 +114,7 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
     var layer = e.target;
+    focused_country = layer.feature.properties.ADMIN;
     map.fitBounds(e.target.getBounds());
     // and also set that country's quick info box and prepare modal
     info.update(layer.feature.properties);
@@ -119,7 +124,7 @@ function zoomToFeature(e) {
     layer.feature.properties.ADMIN + 
     '</h1><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
     // get the innovations related to the country
-    modalInnerContent(layer.feature.properties.ADMIN);
+    setModalContent(layer.feature.properties.ADMIN);
 }
 
 function onEachFeature(feature, layer) {
@@ -215,6 +220,23 @@ var layerControl = L.control.layers(overlays).addTo(map);
 map.on('baselayerchange', function (e) {
     // new layer selected
     active_layer = e.layer;
+    switch(active_layer.stamp()) {
+        case(92):
+            active_impairment = "all";
+            break;
+        case(339):
+            active_impairment = "mobility";
+            break;
+        case(582):
+            active_impairment = "visual";
+            break;
+        case(825):
+            active_impairment = "hearing";
+            break;
+        case(1068):
+            active_impairment = "cognitive";
+            break;
+    };
 });
 
 var info = L.control({
@@ -341,9 +363,10 @@ function autocomplete(inp, arr) {
 autocomplete(document.getElementById("myInput"), countryList);
 //Autocomplete section end
 
-
+// variable holding all the innovations of the country investigated in the modal
+//var modalCountryInnovations = [];
 // Fills modal appropriately
-function modalInnerContent(country) {
+function modalInnerContent(country, impairment) {
     var overviewModal = '<div class="accordion" id="countryAccordion">';
     var iterator = 0;
     westPacific.innovations.forEach(function(item) {
@@ -360,5 +383,107 @@ function modalInnerContent(country) {
     overviewModal += '</div>';
     document.getElementById("nav-overview").innerHTML = overviewModal;
 }
+
+function resetModalImpairment(value) {
+    console.log(value);
+    setModalContent(focused_country, value);
+    console.log(focused_country);
+}
+
+var modalCountryInnovations = [];
+// default impairment is active_impairment (to handle impairment from the map)
+function setModalContent(country, impairment = active_impairment) {
+    // clear previous array of country innovations used for modal creation
+    modalCountryInnovations = [];
+    westPacific.innovations.forEach(function(item) {
+        if (country.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
+            if (impairment === "all") {
+                modalCountryInnovations.push(item);
+            }
+            else if (item["Impairment category (mobility, visual, hearing, cognitive)"].toLowerCase().includes(impairment)) {
+                modalCountryInnovations.push(item);
+            }
+        }
+    });
+    setModalOverviewContent(modalCountryInnovations);
+    setModalTrendContent(modalCountryInnovations);
+    setModalStartupContent(modalCountryInnovations);
+}
+
+function setModalOverviewContent(innovations) {
+    let overviewModal = '<div class="accordion" id="countryAccordion">';
+    var iterator = 0;
+    innovations.forEach(function(item) {
+        iterator += 1;
+        overviewModal += '<div class="accordion-item"><h2 class="accordion-header" id="heading' + iterator.toString() + '">';
+        overviewModal += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'
+        + iterator.toString() + '" aria-expanded="false" aria-controls="collapse' + iterator.toString()
+        + '">' + item.Name + '</button></h2>';
+        overviewModal += '<div id="collapse' + iterator.toString() + '" class="accordion-collapse collapse" aria-labelledby="heading' + iterator.toString() + '" data-bs-parent="#countryAccordion"><div class="accordion-body">'
+        + 'Link (if available): <a href="' + item.Link + '" target="_blank" rel="noopener noreferrer">' + item.Link + '</a></br>More data about the innovation should go here' + '</div></div></div>';
+    });
+    overviewModal += '</div>';
+    document.getElementById("nav-overview").innerHTML = overviewModal;
+}
+
+function setModalTrendContent() {
+
+}
+
+function setModalStartupContent(innovations) {
+
+    // array for startup stage
+    // [ existence, survival, disengagement, success, growth, take-off, maturity]
+    data = [0,0,0,0,0,0,0];
+    innovations.forEach(function(item) {
+        let x = item["Startup Stage(Existence, Survival, Disengagement, Success, Growth, Take-off, Maturity"].toLowerCase();
+        switch(x) {
+            case "existence":
+                data[0] += 1;
+                break;
+            case "survival":
+                data[1] += 1;
+                break;
+            case "disengagement":
+                data[2] += 1;
+                break;
+            case "success":
+                data[3] += 1;
+                break;
+            case "growth":
+                data[4] += 1;
+                break;
+            case "take-off":
+                data[5] += 1;
+                break;
+            case "maturity":
+                data[6] += 1;
+                break;
+        };
+    });
+
+    const startupChart = document.getElementById('startupChart');
+
+    new Chart(startupChart, {
+      type: 'bar',
+      data: {
+        labels: ['Existence', 'Survival', 'Disengagement', 'Success', 'Growth', 'Take-off', 'Maturity'],
+        datasets: [{
+          label: 'Startup Stage',
+          data: data,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+}
+
+
 
 
