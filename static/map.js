@@ -49,10 +49,10 @@ function getColor(d) {
     return d > 30 ? '#3f007d' :
            d > 20  ? '#54278f' :
            d > 15  ? '#6a51a3' :
-           d > 12  ? '#807dba' :
-           d > 10  ? '#9e9ac8' :
-           d > 7  ? '#bcbddc' :
-           d > 4  ? '#dadaeb' :
+           d > 9  ? '#807dba' :
+           d > 6  ? '#9e9ac8' :
+           d > 4  ? '#bcbddc' :
+           d > 2  ? '#dadaeb' :
            d > 0  ? '#efedf5' :
                     '#fcfbfd';
 }
