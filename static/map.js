@@ -63,7 +63,7 @@ var mobility_inno = new Object();
 var visual_inno = new Object();
 var hearing_inno = new Object();
 var cognitive_inno = new Object();
-westPacific.innovations.forEach(function(item) {
+submitted_innos.innovations.forEach(function(item) {
     if (!(item["Country (of Origin)"] in inno_per_country)) {
         inno_per_country[item["Country (of Origin)"]] = 1;
         mobility_inno[item["Country (of Origin)"]] = 0;
@@ -369,7 +369,7 @@ autocomplete(document.getElementById("myInput"), countryList);
 function modalInnerContent(country, impairment) {
     var overviewModal = '<div class="accordion" id="countryAccordion">';
     var iterator = 0;
-    westPacific.innovations.forEach(function(item) {
+    submitted_innos.innovations.forEach(function(item) {
         if (country.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
             iterator += 1;
             overviewModal += '<div class="accordion-item"><h2 class="accordion-header" id="heading' + iterator.toString() + '">';
@@ -395,7 +395,7 @@ var modalCountryInnovations = [];
 function setModalContent(country, impairment = active_impairment) {
     // clear previous array of country innovations used for modal creation
     modalCountryInnovations = [];
-    westPacific.innovations.forEach(function(item) {
+    submitted_innos.innovations.forEach(function(item) {
         if (country.toUpperCase() === item["Country (of Origin)"].toUpperCase()) {
             if (impairment === "all") {
                 modalCountryInnovations.push(item);
@@ -436,7 +436,7 @@ function setModalStartupContent(innovations) {
     // [ existence, survival, disengagement, success, growth, take-off, maturity]
     data = [0,0,0,0,0,0,0];
     innovations.forEach(function(item) {
-        let x = item["Startup Stage(Existence, Survival, Disengagement, Success, Growth, Take-off, Maturity"].toLowerCase();
+        let x = item["Startup Stage(Existence, Survival, Disengagement, Success, Growth, Take-off, Maturity)"].toLowerCase();
         switch(x) {
             case "existence":
                 data[0] += 1;
@@ -458,6 +458,8 @@ function setModalStartupContent(innovations) {
                 break;
             case "maturity":
                 data[6] += 1;
+                break;
+            default:
                 break;
         };
     });
